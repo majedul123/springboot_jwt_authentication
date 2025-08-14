@@ -77,4 +77,24 @@ class JwtService(
             null
         }
     }
+
+    fun getTokenExpiryTimeMillis(token: String): Long? {
+        val rawToken = if (token.startsWith("Bearer ")) {
+            token.removePrefix("Bearer ")
+        } else token
+
+        return try {
+            val claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(rawToken)
+                .payload
+            claims.expiration?.time
+        } catch (e: io.jsonwebtoken.ExpiredJwtException) {
+            // Token is expired, but we can still read the expiration time
+            e.claims.expiration?.time
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

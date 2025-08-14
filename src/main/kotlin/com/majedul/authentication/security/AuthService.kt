@@ -24,7 +24,9 @@ class AuthService(
 ) {
     data class TokenPair(
         val accessToken: String,
-        val refreshToken: String
+        val refreshToken: String,
+        val accessTokenExpirationTimestamp: Long?,
+        val userId: String
     )
 
     fun register(email: String, password: String): User {
@@ -55,7 +57,9 @@ class AuthService(
 
         return TokenPair(
             accessToken = newAccessToken,
-            refreshToken = newRefreshToken
+            refreshToken = newRefreshToken,
+            userId = user.id.toHexString(),
+            accessTokenExpirationTimestamp = jwtService.getTokenExpiryTimeMillis(newAccessToken)
         )
     }
 
@@ -86,7 +90,9 @@ class AuthService(
 
         return TokenPair(
             accessToken = newAccessToken,
-            refreshToken = newRefreshToken
+            refreshToken = newRefreshToken,
+            userId = user.id.toHexString(),
+            accessTokenExpirationTimestamp = jwtService.getTokenExpiryTimeMillis(newAccessToken)
         )
     }
 
